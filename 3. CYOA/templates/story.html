@@ -1,0 +1,45 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>CYOA 0.1</title>
+  <meta name="description" content="CYOA 0.1">
+  <meta name="author" content="@hija - Github">
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+
+    <div class="container">
+        <div id="content">
+            <h1>{{ .Title }}</h1>
+            
+            <h5>
+                {{range .Story}}
+                    <p>{{ . }}</p>
+                {{end}}
+            </h5>
+
+            {{if len .Options}}
+            <strong class="text-secondary">What do you want to do next?</strong>
+            <div class="options">
+                {{range .Options}}
+                <a class="btn btn-dark" href="{{.Arc}}">{{.Text}}</a>
+                {{end}}
+            </div>
+            {{else}}
+            <a class="btn btn-dark" href="/">Restart</a>
+            {{end}}
+        </div> 
+    </div>
+  
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/bootstrap.bundle.js"></script>
+</body>
+</html>

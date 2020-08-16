@@ -1,0 +1,24 @@
+body {
+    background-color: #FEF8DE;
+}
+
+#content {
+    background-color: #96D8C4;
+    border-radius: 10px;
+    margin-top: 10%;
+}
+
+h1 {
+    margin-bottom: 2rem;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    margin-bottom: 1rem;
+}
