@@ -2,6 +2,9 @@ package urlshort
 
 import (
 	"net/http"
+	"fmt"
+
+	"gopkg.in/yaml.v2"
 )
 
 // MapHandler will return an http.HandlerFunc (which also
@@ -11,8 +14,22 @@ import (
 // If the path is not provided in the map, then the fallback
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
-	//	TODO: Implement this...
-	return nil
+	return func(out http.ResponseWriter, in *http.Request) {
+		if in.Method != http.MethodGet {
+			fallback.ServeHTTP(out, in)
+			return
+		}
+
+		url, ok := pathsToUrls[in.URL.Path]
+		if !ok {
+			fallback.ServeHTTP(out, in)
+			return
+		}
+
+		out.Header().Add("Location", url)
+		out.WriteHeader(301)
+		fmt.Printf("%s %s %d: %s\n", in.Method, in.URL.Path, 301, url)
+	}
 }
 
 // YAMLHandler will parse the provided YAML and then return
@@ -23,15 +40,26 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 //
 // YAML is expected to be in the format:
 //
+//     pairs:
 //     - path: /some-path
 //       url: https://www.some-url.com/demo
-//
-// The only errors that can be returned all related to having
-// invalid YAML data.
-//
-// See MapHandler to create a similar http.HandlerFunc via
-// a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
-	// TODO: Implement this...
-	return nil, nil
+	type pair struct {
+		Path string
+		URL string
+	}
+
+	type pairs struct {
+		Pairs []pair
+	}
+
+	var prs pairs
+	err := yaml.Unmarshal(yml, &prs)
+
+	pathsToUrls := make(map[string]string, len(prs.Pairs))
+	for _, entry := range prs.Pairs {
+		pathsToUrls[entry.Path] = entry.URL
+	}
+
+	return MapHandler(pathsToUrls, fallback), err
 }
